@@ -1,36 +1,36 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# UX Writing System
 
-## Getting Started
+AI 라이팅 감사 에이전트. UI 문구의 톤앤매너를 자동 검사하고 수정안을 제안하는 내부 도구.
 
-First, run the development server:
+## 구조
+
+- **레퍼런스**: 5계층 라이팅 규칙 조회 (L1 Voice ~ L5 Word List)
+- **테스트**: 문구 입력 → AI 감사 → 수정안 제안
+- **관리**: 규칙 데이터 CRUD (비밀번호 보호)
+
+## 기술 스택
+
+- Next.js (App Router) + Tailwind CSS
+- Prisma ORM + SQLite (배포 시 PostgreSQL 전환)
+- OpenAI gpt-4o
+
+## 시작하기
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npx prisma generate
+npm run db:seed    # 시드 데이터 투입
+npm run dev        # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 환경변수 (.env)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+DATABASE_URL="file:./dev.db"
+ADMIN_PASSWORD="your-password"
+OPENAI_API_KEY="sk-..."
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 설계 문서
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+`docs/` 폴더 참고.
