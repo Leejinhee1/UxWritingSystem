@@ -37,6 +37,9 @@ yarn-error.log*
 *.db
 *.db-journal
 
+# presentation files
+docs/presentation*
+
 # vercel
 .vercel
 
