@@ -40,35 +40,60 @@ export default async function HomePage() {
       {/* 검토 프로세스 */}
       <h2 className="text-lg font-semibold mb-6 mt-10">문구 검토 프로세스</h2>
 
+      <div className="flex items-center gap-1.5 mb-4 text-xs text-gray-400">
+        <span className="inline-flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-emerald-400" /> 규칙 기반</span>
+        <span className="mx-1">·</span>
+        <span className="inline-flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-blue-400" /> AI 기반</span>
+        <span className="mx-1">·</span>
+        <span className="inline-flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-gray-300" /> 공통</span>
+      </div>
+
       <div className="flex items-center gap-2 flex-wrap mb-8 text-sm">
-        {auditProcess.map((step, i) => (
-          <div key={i} className="flex items-center gap-2">
-            <span className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 rounded-full text-gray-700 font-medium whitespace-nowrap">
-              <span className="text-xs text-gray-400">{i + 1}</span>
-              {step.title}
-            </span>
-            {i < auditProcess.length - 1 && (
-              <span className="text-gray-300">→</span>
-            )}
-          </div>
-        ))}
+        {auditProcess.map((step, i) => {
+          const bg = step.type === "rule" ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+            : step.type === "ai" ? "bg-blue-50 text-blue-700 border border-blue-200"
+            : "bg-gray-100 text-gray-700";
+          return (
+            <div key={i} className="flex items-center gap-2">
+              <span className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full font-medium whitespace-nowrap ${bg}`}>
+                <span className="text-xs opacity-50">{i + 1}</span>
+                {step.title}
+              </span>
+              {i < auditProcess.length - 1 && (
+                <span className="text-gray-300">→</span>
+              )}
+            </div>
+          );
+        })}
       </div>
 
       <div className="space-y-4 text-sm">
-        {auditProcess.map((step, i) => (
-          <div key={i} className="flex gap-3">
-            <span className="text-gray-400 shrink-0 w-4 text-right">{i + 1}.</span>
-            <div>
-              <span className="font-medium text-gray-900">{step.title}</span>
-              <span className="text-gray-500"> — {step.description}</span>
-              {step.layers && (
-                <span className="inline-flex items-center ml-1.5 px-2 py-0.5 bg-gray-900 text-white text-xs rounded font-mono">
-                  {step.layers}
-                </span>
-              )}
+        {auditProcess.map((step, i) => {
+          const dot = step.type === "rule" ? "bg-emerald-400"
+            : step.type === "ai" ? "bg-blue-400"
+            : "bg-gray-300";
+          return (
+            <div key={i} className="flex gap-3 items-start">
+              <div className="flex items-center gap-2 shrink-0 mt-1">
+                <span className={`w-2 h-2 rounded-full ${dot}`} />
+                <span className="text-gray-400 w-3 text-right text-xs">{i + 1}.</span>
+              </div>
+              <div>
+                <span className="font-medium text-gray-900">{step.title}</span>
+                <span className="text-gray-500"> — {step.description}</span>
+                {step.layers && (
+                  <span className={`inline-flex items-center ml-1.5 px-2 py-0.5 text-xs rounded font-mono ${
+                    step.type === "rule" ? "bg-emerald-100 text-emerald-700"
+                    : step.type === "ai" ? "bg-blue-100 text-blue-700"
+                    : "bg-gray-200 text-gray-600"
+                  }`}>
+                    {step.layers}
+                  </span>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <div className="mt-6 bg-gray-50 rounded-lg p-4 text-sm text-gray-600 space-y-1">
@@ -81,12 +106,12 @@ export default async function HomePage() {
 }
 
 const auditProcess = [
-  { title: "텍스트 입력 + UI 유형 선택", description: "검사할 문구를 입력하고, UI 유형을 선택한다 (미선택 시 AI가 자동 분류).", layers: null },
-  { title: "UI 유형 분류", description: "문구가 버튼인지, 라벨인지, 에러 메시지인지 분류한다.", layers: "L4" },
-  { title: "예외 규칙 적용", description: "UI 유형별로 적용하지 않을 규칙을 제외한다.", layers: "L4" },
-  { title: "규칙 기반 감사", description: "용어집 aliases를 매칭하여 틀린 표현을 찾는다.", layers: "L5" },
-  { title: "AI 기반 감사", description: "종결어미, 잡초뽑기, 날짜/숫자 형식, 톤/구조를 AI가 판단한다.", layers: "L1 + L2 + L3 + L4" },
-  { title: "결과 병합 + 제시", description: "규칙 위반 + AI 위반을 합산. 모든 규칙을 반영한 최종 수정 문구를 제안한다.", layers: "L1~L5" },
+  { title: "텍스트 입력 + UI 유형 선택", description: "검사할 문구를 입력하고, UI 유형을 선택한다 (미선택 시 AI가 자동 분류).", layers: null, type: "common" as const },
+  { title: "UI 유형 분류", description: "문구가 버튼인지, 라벨인지, 에러 메시지인지 분류한다.", layers: "L4", type: "ai" as const },
+  { title: "예외 규칙 적용", description: "UI 유형별로 적용하지 않을 규칙을 제외한다.", layers: "L4", type: "common" as const },
+  { title: "규칙 기반 감사", description: "용어집 aliases를 매칭하여 틀린 표현을 찾는다.", layers: "L5", type: "rule" as const },
+  { title: "AI 기반 감사", description: "종결어미, 잡초뽑기, 날짜/숫자 형식, 톤/구조를 AI가 판단한다.", layers: "L1 + L2 + L3 + L4", type: "ai" as const },
+  { title: "결과 병합 + 제시", description: "규칙 위반 + AI 위반을 합산. 모든 규칙을 반영한 최종 수정 문구를 제안한다.", layers: "L1~L5", type: "common" as const },
 ];
 
 const layers = [
