@@ -1,0 +1,44 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Rule {
+  id          String   @id @default(cuid())
+  ruleType    String   @map("rule_type") // brand_voice, writing_principle, grammar, ui_pattern, word_list
+  name        String
+  description String   @default("")
+  severity    String   @default("info") // error, warning, info
+  pattern     String   @default("{}") // JSON string
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("rules")
+}
+
+model Audit {
+  id                 String   @id @default(cuid())
+  inputText          String   @map("input_text")
+  uiCategoryDetected String   @default("") @map("ui_category_detected")
+  violations         String   @default("[]") @map("violations") // JSON string
+  suggestions        String   @default("[]") @map("suggestions") // JSON string
+  acceptedSuggestion String?  @map("accepted_suggestion")
+  createdAt          DateTime @default(now()) @map("created_at")
+
+  @@map("audits")
+}
+
+model Exception {
+  id          String   @id @default(cuid())
+  textPattern String   @map("text_pattern")
+  uiType      String   @map("ui_type")
+  ruleId      String   @map("rule_id")
+  reason      String   @default("")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("exceptions")
+}
