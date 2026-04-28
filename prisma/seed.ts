@@ -1,12 +1,17 @@
+import "dotenv/config";
 import { PrismaClient } from "../src/generated/prisma/client.js";
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
-import path from "path";
+import { PrismaPg } from "@prisma/adapter-pg";
 
-const dbPath = path.join(__dirname, "dev.db");
-const adapter = new PrismaBetterSqlite3({
-  url: `file:${dbPath}`,
-});
+// PostgreSQL (Supabase) — 현재 사용
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! });
 const prisma = new PrismaClient({ adapter });
+
+// SQLite (로컬 개발) — 필요 시 위를 주석하고 아래 주석 해제
+// import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
+// import path from "path";
+// const dbPath = path.join(__dirname, "dev.db");
+// const adapter = new PrismaBetterSqlite3({ url: `file:${dbPath}` });
+// const prisma = new PrismaClient({ adapter });
 
 async function main() {
   // Clean existing data

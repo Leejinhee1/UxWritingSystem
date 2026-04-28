@@ -20,7 +20,7 @@
   - 짧은 명사형 ("로그인 필수", "NEW") → label
   - "~하기" 형태 → button
 
-[Step 3] L4 조회 → skip_rules 적용
+[Step 3] L4 조회 → skipOption 적용
   - 유형 = label → skip ALL → 감사 안 함 (단, L5 용어집은 항상 검사)
   - 유형 = button → skip 종결어미, 잡초뽑기 등 → 패턴만 체크
   - 유형 = error_message → skip 없음 → 톤/구조 전부 체크
