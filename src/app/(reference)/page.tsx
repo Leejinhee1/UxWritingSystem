@@ -73,21 +73,20 @@ export default async function HomePage() {
 
       <div className="mt-6 bg-gray-50 rounded-lg p-4 text-sm text-gray-600 space-y-1">
         <p className="font-medium text-gray-700">2레이어 감사 구조</p>
-        <p>규칙 기반 (L3 + L5): 종결어미, 금지 표현, 용어집 aliases 매칭. 정확도 ~100%</p>
-        <p>AI 기반 (L1 + L2 + L4): 카테고리 분류, 톤 판단, 수정안 생성. 정확도 ~80%</p>
+        <p>규칙 기반 (L5): 용어집 aliases 매칭. 정확도 ~100%</p>
+        <p>AI 기반 (L1 + L2 + L3 + L4): 종결어미, 잡초뽑기, 날짜/숫자 형식, 톤 판단, 수정안 생성. 정확도 ~80%</p>
       </div>
     </div>
   );
 }
 
 const auditProcess = [
-  { title: "텍스트 수집", description: "검사할 문구를 입력받는다.", layers: null },
-  { title: "텍스트 유형 분류", description: "문구가 버튼인지, 라벨인지, 에러 메시지인지 먼저 분류한다.", layers: "L4" },
-  { title: "skip_rules 적용", description: "유형별로 적용하지 않을 규칙을 제외한다.", layers: "L4" },
-  { title: "규칙 기반 감사", description: "패턴 매칭으로 종결어미, 금지 표현, 용어집 aliases를 체크한다.", layers: "L3 + L5" },
-  { title: "AI 기반 감사", description: "Voice, Writing Principles, 해당 UI 유형의 tone과 예시를 AI가 판단한다.", layers: "L1 + L2 + L4" },
-  { title: "결과 제시", description: "위반 항목만 표시. 사용자는 적용 또는 무시를 선택.", layers: "L1~L5" },
-  { title: "학습 루프", description: "무시하면 예외로 기록. 적용하면 좋은 예시로 축적.", layers: "L4 + L5" },
+  { title: "텍스트 입력 + UI 유형 선택", description: "검사할 문구를 입력하고, UI 유형을 선택한다 (미선택 시 AI가 자동 분류).", layers: null },
+  { title: "UI 유형 분류", description: "문구가 버튼인지, 라벨인지, 에러 메시지인지 분류한다.", layers: "L4" },
+  { title: "예외 규칙 적용", description: "UI 유형별로 적용하지 않을 규칙을 제외한다.", layers: "L4" },
+  { title: "규칙 기반 감사", description: "용어집 aliases를 매칭하여 틀린 표현을 찾는다.", layers: "L5" },
+  { title: "AI 기반 감사", description: "종결어미, 잡초뽑기, 날짜/숫자 형식, 톤/구조를 AI가 판단한다.", layers: "L1 + L2 + L3 + L4" },
+  { title: "결과 병합 + 제시", description: "규칙 위반 + AI 위반을 합산. 모든 규칙을 반영한 최종 수정 문구를 제안한다.", layers: "L1~L5" },
 ];
 
 const layers = [
