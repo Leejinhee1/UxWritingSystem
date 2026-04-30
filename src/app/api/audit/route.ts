@@ -89,14 +89,7 @@ export async function POST(request: NextRequest) {
   }
 
   // === Merge results ===
-  // If AI classified as label/placeholder, skip all violations
-  const skipCategory = aiResult?.ui_type === "label" || aiResult?.ui_type === "placeholder";
-  if (skipCategory) {
-    // label/placeholder여도 용어집(word_list) 위반은 유지
-    const wordListOnly = ruleViolations.filter((v) => v.ruleType === "word_list");
-    ruleViolations.length = 0;
-    ruleViolations.push(...wordListOnly);
-  }
+  // skip_rules는 AI 프롬프트에서 처리. 규칙 기반(L5)은 항상 유지.
 
   // Build rule-based suggestions to match violations 1:1
   const ruleSuggestions: Array<{ original: string; suggested: string; reason: string }> = [];
@@ -273,7 +266,7 @@ ${userUiType ? `## 사용자 지정 UI 유형: ${userUiType}
    - body: 종결어미가 있는 일반 문장. "~이에요", "~있습니다" 등으로 끝남.
    - button: "~하기", "~받기" 로 끝나는 행동 유도.
    - 문장이 길고 종결어미가 있으면 label이 아니라 body 또는 다른 문장형 카테고리.
-2. label, placeholder로 분류되면 violations를 빈 배열로 리턴하세요 (건드리지 않음).
+2. label, placeholder로 분류되더라도 L3 Grammar 규칙(숫자 표기, 날짜 형식, 환율 정보 등)은 검사하세요. 단, skip_rules에 포함된 규칙은 건너뛰세요.
 3. 적용한 모든 규칙을 violations에 넣으세요. 여기에는:
    - Writing Principles 위반 (잡초뽑기 등. 맥락상 의미가 있으면 위반이 아닙니다)
    - Component Patterns 톤 적용 (예: error_message의 "공감 + 해결책" 톤을 적용했다면 그것도 violation으로 기록)
