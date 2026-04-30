@@ -65,7 +65,13 @@ export async function POST(request: NextRequest) {
     pattern: JSON.parse(r.pattern),
   }));
 
-  const systemPrompt = buildSystemPrompt(voice, principles, grammars, patterns, ruleViolations, ui_type || null);
+  // skip_rules id → 이름 변환용 맵
+  const ruleNameMap: Record<string, string> = {};
+  for (const r of rules) {
+    ruleNameMap[r.id] = r.name;
+  }
+
+  const systemPrompt = buildSystemPrompt(voice, principles, grammars, patterns, ruleViolations, ui_type || null, ruleNameMap);
 
   let aiResult: AIAuditResult | null = null;
   try {
@@ -179,6 +185,7 @@ function buildSystemPrompt(
   patterns: Array<{ name: string; pattern: Record<string, unknown> }>,
   ruleViolations: Array<{ name: string; message: string }>,
   userUiType: string | null,
+  ruleNameMap: Record<string, string>,
 ) {
   return `당신은 UX writing 감사 에이전트입니다.
 사용자가 입력한 UI 문구를 아래 라이팅 규칙에 따라 감사하고, 모든 규칙을 반영한 하나의 개선된 문구를 제안하세요.
@@ -242,7 +249,10 @@ ${patterns.map((p) => {
   let detail = `- ${pat.ui_type} (${p.name})`;
   if (pat.tone) detail += `\n  톤: ${pat.tone}`;
   if (pat.pattern_rule) detail += `\n  패턴: ${pat.pattern_rule}`;
-  if ((pat.skip_rules as string[])?.length) detail += `\n  skip_rules: ${(pat.skip_rules as string[]).join(", ")}`;
+  if ((pat.skip_rules as string[])?.length) {
+    const skipNames = (pat.skip_rules as string[]).map(id => id === "ALL" ? "ALL" : ruleNameMap[id] || id);
+    detail += `\n  이 유형에서 건너뛸 규칙: ${skipNames.join(", ")}`;
+  }
   if ((pat.examples as Array<{ do: string; dont: string }>)?.length) {
     for (const ex of (pat.examples as Array<{ do: string; dont: string }>)) {
       detail += `\n  Do: "${ex.do}" / Don't: "${ex.dont}"`;
