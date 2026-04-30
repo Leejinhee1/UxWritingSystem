@@ -19,7 +19,10 @@ src/
 │   │   ├── grammar/          # L3 Grammar & Mechanics
 │   │   ├── patterns/         # L4 Component Patterns
 │   │   └── wordlist/         # L5 Word List
-│   ├── test/                 # 탭 2: 테스트 (문구 감사)
+│   ├── test/                 # 탭 2: 테스트 (사이드바: 문구 테스트 / 일괄 감사)
+│   │   ├── page.tsx          # 단건 문구 테스트
+│   │   ├── bulk/page.tsx     # 일괄 감사 (여러 문구 한번에)
+│   │   └── layout.tsx        # TestSidebar 레이아웃
 │   ├── admin/                # 탭 3: 관리 (비밀번호 보호, CRUD)
 │   │   ├── voice/
 │   │   ├── principles/
@@ -28,7 +31,7 @@ src/
 │   │   └── wordlist/
 │   └── api/
 │       ├── rules/            # GET/POST + [id] PUT/DELETE
-│       ├── audit/            # POST (규칙 기반 + AI 감사)
+│       ├── audit/            # POST (단건 감사) + bulk/ (일괄 감사)
 │       └── auth/             # POST (비밀번호) / DELETE (로그아웃)
 ├── components/
 │   ├── Nav.tsx               # 상단 3탭 네비게이션
@@ -37,7 +40,8 @@ src/
 │   └── LayerOverview.tsx     # 개요 페이지 접기/펼치기
 ├── lib/
 │   ├── db.ts                 # Prisma 클라이언트
-│   └── openai.ts             # OpenAI 클라이언트
+│   ├── openai.ts             # OpenAI 클라이언트
+│   └── audit.ts              # 감사 공통 로직 (prepareRules, auditText)
 └── generated/prisma/         # Prisma 생성 코드
 
 prisma/
@@ -98,6 +102,5 @@ OPENAI_API_KEY="sk-..."
 - 사이드바에 Layer 번호 라벨 (L1, L2...)
 
 ## 미구현
-- 일괄 테스트 (여러 문구 한번에)
-- 테스트 히스토리
 - Figma 플러그인 (2단계)
+- Claude Code skill 변환 (3단계)

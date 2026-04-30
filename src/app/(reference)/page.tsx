@@ -40,79 +40,59 @@ export default async function HomePage() {
       {/* 검토 프로세스 */}
       <h2 className="text-lg font-semibold mb-6 mt-10">문구 검토 프로세스</h2>
 
-      <div className="flex items-center gap-1.5 mb-4 text-xs text-gray-400">
-        <span className="inline-flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-emerald-400" /> 규칙 기반</span>
-        <span className="mx-1">·</span>
-        <span className="inline-flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-blue-400" /> AI 기반</span>
-        <span className="mx-1">·</span>
-        <span className="inline-flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-gray-300" /> 공통</span>
-      </div>
-
+      {/* 흐름 요약 */}
       <div className="flex items-center gap-2 flex-wrap mb-8 text-sm">
-        {auditProcess.map((step, i) => {
-          const bg = step.type === "rule" ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-            : step.type === "ai" ? "bg-blue-50 text-blue-700 border border-blue-200"
-            : "bg-gray-100 text-gray-700";
-          return (
-            <div key={i} className="flex items-center gap-2">
-              <span className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full font-medium whitespace-nowrap ${bg}`}>
-                <span className="text-xs opacity-50">{i + 1}</span>
-                {step.title}
-              </span>
-              {i < auditProcess.length - 1 && (
-                <span className="text-gray-300">→</span>
-              )}
-            </div>
-          );
-        })}
+        <span className="px-3 py-1.5 rounded-full bg-gray-100 text-gray-700 font-medium">문구 입력</span>
+        <span className="text-gray-300">→</span>
+        <span className="px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-medium">규칙 기반 감사</span>
+        <span className="text-gray-300">+</span>
+        <span className="px-3 py-1.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 font-medium">AI 기반 감사</span>
+        <span className="text-gray-300">→</span>
+        <span className="px-3 py-1.5 rounded-full bg-gray-100 text-gray-700 font-medium">결과 병합</span>
       </div>
 
-      <div className="space-y-4 text-sm">
-        {auditProcess.map((step, i) => {
-          const dot = step.type === "rule" ? "bg-emerald-400"
-            : step.type === "ai" ? "bg-blue-400"
-            : "bg-gray-300";
-          return (
-            <div key={i} className="flex gap-3 items-start">
-              <div className="flex items-center gap-2 shrink-0 mt-1">
-                <span className={`w-2 h-2 rounded-full ${dot}`} />
-                <span className="text-gray-400 w-3 text-right text-xs">{i + 1}.</span>
-              </div>
-              <div>
-                <span className="font-medium text-gray-900">{step.title}</span>
-                <span className="text-gray-500"> — {step.description}</span>
-                {step.layers && (
-                  <span className={`inline-flex items-center ml-1.5 px-2 py-0.5 text-xs rounded font-mono ${
-                    step.type === "rule" ? "bg-emerald-100 text-emerald-700"
-                    : step.type === "ai" ? "bg-blue-100 text-blue-700"
-                    : "bg-gray-200 text-gray-600"
-                  }`}>
-                    {step.layers}
-                  </span>
-                )}
-              </div>
-            </div>
-          );
-        })}
+      {/* 2레이어 상세 */}
+      <div className="grid grid-cols-2 gap-4 mb-6">
+        {/* 규칙 기반 */}
+        <div className="rounded-lg border border-emerald-200 bg-emerald-50/50 p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
+            <span className="text-sm font-semibold text-emerald-800">규칙 기반</span>
+            <span className="text-xs px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-600 font-mono">L5</span>
+          </div>
+          <ul className="space-y-2 text-sm text-emerald-900/70">
+            <li>용어집 aliases 매칭 (deterministic)</li>
+            <li>틀린 표현 → 올바른 용어 제안</li>
+            <li className="text-xs text-emerald-600 pt-1">정확도 ~100%. AI 없이 동작.</li>
+          </ul>
+        </div>
+
+        {/* AI 기반 */}
+        <div className="rounded-lg border border-blue-200 bg-blue-50/50 p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="w-2.5 h-2.5 rounded-full bg-blue-400" />
+            <span className="text-sm font-semibold text-blue-800">AI 기반</span>
+            <span className="text-xs px-1.5 py-0.5 rounded bg-blue-100 text-blue-600 font-mono">L1 + L2 + L3 + L4</span>
+          </div>
+          <ul className="space-y-2 text-sm text-blue-900/70">
+            <li>UI 유형 자동 분류 + 예외 규칙 적용</li>
+            <li>종결어미 판단 (해요체/합쇼체)</li>
+            <li>잡초뽑기, 날짜/숫자 형식</li>
+            <li>톤/구조 판단 + 수정안 생성</li>
+            <li className="text-xs text-blue-600 pt-1">정확도 ~80%. gpt-4o 기반.</li>
+          </ul>
+        </div>
       </div>
 
-      <div className="mt-6 bg-gray-50 rounded-lg p-4 text-sm text-gray-600 space-y-1">
-        <p className="font-medium text-gray-700">2레이어 감사 구조</p>
-        <p>규칙 기반 (L5): 용어집 aliases 매칭. 정확도 ~100%</p>
-        <p>AI 기반 (L1 + L2 + L3 + L4): 종결어미, 잡초뽑기, 날짜/숫자 형식, 톤 판단, 수정안 생성. 정확도 ~80%</p>
+      {/* 병합 설명 */}
+      <div className="bg-gray-50 rounded-lg p-4 text-sm text-gray-600 space-y-1">
+        <p className="font-medium text-gray-700">결과 병합</p>
+        <p>두 레이어의 위반을 합산하고, 모든 규칙을 반영한 최종 수정 문구를 제안합니다.</p>
+        <p>AI 서비스 불가 시 규칙 기반(L5 용어집)만 동작합니다.</p>
       </div>
     </div>
   );
 }
-
-const auditProcess = [
-  { title: "텍스트 입력 + UI 유형 선택", description: "검사할 문구를 입력하고, UI 유형을 선택한다 (미선택 시 AI가 자동 분류).", layers: null, type: "common" as const },
-  { title: "UI 유형 분류", description: "문구가 버튼인지, 라벨인지, 에러 메시지인지 분류한다.", layers: "L4", type: "ai" as const },
-  { title: "예외 규칙 적용", description: "UI 유형별로 적용하지 않을 규칙을 제외한다.", layers: "L4", type: "common" as const },
-  { title: "규칙 기반 감사", description: "용어집 aliases를 매칭하여 틀린 표현을 찾는다.", layers: "L5", type: "rule" as const },
-  { title: "AI 기반 감사", description: "종결어미, 잡초뽑기, 날짜/숫자 형식, 톤/구조를 AI가 판단한다.", layers: "L1 + L2 + L3 + L4", type: "ai" as const },
-  { title: "결과 병합 + 제시", description: "규칙 위반 + AI 위반을 합산. 모든 규칙을 반영한 최종 수정 문구를 제안한다.", layers: "L1~L5", type: "common" as const },
-];
 
 const layers = [
   { number: 1, name: "Voice", href: "/voice", ruleType: "brand_voice", description: "브랜드 성격 정의" },

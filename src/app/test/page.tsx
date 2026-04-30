@@ -74,7 +74,7 @@ export default function TestPage() {
   const aiViolations = result?.violations.filter((v) => v.ruleId === "ai") || [];
 
   return (
-    <div className="max-w-2xl mx-auto py-8 px-6">
+    <div className="max-w-2xl">
       <h1 className="text-2xl font-bold mb-1">문구 테스트</h1>
       <p className="text-gray-500 mb-6">
         문구를 입력하면 라이팅 규칙에 따라 검사합니다.
