@@ -143,7 +143,7 @@ export async function POST(request: NextRequest) {
   const pass = violations.length === 0;
 
   // Save audit record
-  await prisma.audit.create({
+  const audit = await prisma.audit.create({
     data: {
       inputText: text,
       uiCategoryDetected: aiResult?.ui_type || "auto",
@@ -153,6 +153,7 @@ export async function POST(request: NextRequest) {
   });
 
   return Response.json({
+    audit_id: audit.id,
     ui_type_detected: aiResult?.ui_type || "auto",
     violations,
     suggestions: allSuggestions,

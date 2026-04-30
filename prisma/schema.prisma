@@ -27,6 +27,8 @@ model Audit {
   violations         String   @default("[]") @map("violations") // JSON string
   suggestions        String   @default("[]") @map("suggestions") // JSON string
   acceptedSuggestion String?  @map("accepted_suggestion")
+  feedback           String?  @map("feedback") // "good" | "bad" | null
+  feedbackReason     String?  @map("feedback_reason") // bad일 때 사유
   createdAt          DateTime @default(now()) @map("created_at")
 
   @@map("audits")

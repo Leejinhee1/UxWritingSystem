@@ -17,6 +17,7 @@ interface Suggestion {
 }
 
 interface AuditResult {
+  audit_id: string;
   ui_type_detected: string;
   violations: Violation[];
   suggestions: Suggestion[];
@@ -32,6 +33,9 @@ export default function TestPage() {
   const [rawJson, setRawJson] = useState<string>("");
   const [showJson, setShowJson] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [feedback, setFeedback] = useState<"good" | "bad" | null>(null);
+  const [badReason, setBadReason] = useState("");
+  const [feedbackSent, setFeedbackSent] = useState(false);
 
   useEffect(() => {
     fetch("/api/rules")
@@ -51,6 +55,9 @@ export default function TestPage() {
     if (!text.trim()) return;
     setLoading(true);
     setResult(null);
+    setFeedback(null);
+    setBadReason("");
+    setFeedbackSent(false);
 
     const res = await fetch("/api/audit", {
       method: "POST",
@@ -171,6 +178,67 @@ export default function TestPage() {
               )}
             </div>
           )}
+
+          {/* 피드백 */}
+          <div className="pt-4 border-t border-gray-100">
+            {feedbackSent ? (
+              <p className="text-xs text-gray-400">피드백 완료 {feedback === "good" ? "👍" : "👎"}</p>
+            ) : (
+              <div className="space-y-2">
+                <p className="text-xs text-gray-400">이 결과가 도움이 됐나요?</p>
+                <div className="flex gap-2">
+                  <button
+                    onClick={async () => {
+                      setFeedback("good");
+                      setFeedbackSent(true);
+                      await fetch(`/api/audit/${result.audit_id}/feedback`, {
+                        method: "PATCH",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ feedback: "good" }),
+                      });
+                    }}
+                    className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
+                      feedback === "good" ? "bg-green-50 border-green-300 text-green-700" : "border-gray-200 text-gray-400 hover:border-gray-300"
+                    }`}
+                  >
+                    👍 Good
+                  </button>
+                  <button
+                    onClick={() => setFeedback("bad")}
+                    className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
+                      feedback === "bad" ? "bg-red-50 border-red-300 text-red-700" : "border-gray-200 text-gray-400 hover:border-gray-300"
+                    }`}
+                  >
+                    👎 Bad
+                  </button>
+                </div>
+                {feedback === "bad" && !feedbackSent && (
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={badReason}
+                      onChange={(e) => setBadReason(e.target.value)}
+                      className="flex-1 text-sm border border-gray-200 rounded-lg px-3 py-1.5 focus:outline-none focus:border-gray-400"
+                      placeholder="어떤 점이 문제였나요?"
+                    />
+                    <button
+                      onClick={async () => {
+                        setFeedbackSent(true);
+                        await fetch(`/api/audit/${result.audit_id}/feedback`, {
+                          method: "PATCH",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ feedback: "bad", feedbackReason: badReason }),
+                        });
+                      }}
+                      className="text-xs px-3 py-1.5 bg-gray-900 text-white rounded-lg hover:bg-gray-800"
+                    >
+                      전송
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
 
           {/* JSON 토글 */}
           <div className="pt-4 border-t border-gray-100">
